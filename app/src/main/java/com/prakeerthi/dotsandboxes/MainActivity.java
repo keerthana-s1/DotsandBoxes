@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent go;
-                go = new Intent(MainActivity.this,Gamescreen.class);
+                go = new Intent(MainActivity.this,menu.class);
                 startActivity(go);
             }
         });

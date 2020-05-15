@@ -12,22 +12,23 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.TextView;
 
 import com.prakeerthi.dotsandboxes.Gamescreen;
 
 import static java.lang.Math.min;
 
 public class CustomView extends View {
-
-    private Rect rect,rec;
+    private TextView text,s1,s2;
+    private Rect rect;
     private Paint paint;
     private Paint paint1,paint2,color1,color2,color3,color4;
     private Path path1,path2;
-    private int[] flag ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    private int[] box ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    private int[] points ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    private int[] flag ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    private int[] box ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    private int[] points ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     private  int i,j,temp,prevpos=-1,pos=0,player=1,x,y;
-
+    private int p1=0,p2=0,b,n,space;
 
     public CustomView(Context context) {
         super(context);
@@ -47,6 +48,34 @@ public class CustomView extends View {
     public CustomView(Context context,  AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(attrs);
+    }
+    public void size(int si)
+    {
+        n=si;
+        b=n-1;
+        space=900/b;
+    }
+    public void change(TextView playe,TextView scor1,TextView scor2)
+    {
+       text=playe;
+        if(player==1)
+            text.setText("Player 1 turn :)");
+        else
+            text.setText("Player 2 turn :)");
+        s1=scor1;
+        s2=scor2;
+        s1.setText(String.valueOf(p1));
+        s2.setText(String.valueOf(p2));
+    }
+
+    public void update(int n)
+    {   if(n==1)
+            p1++;
+        else
+            p2++;
+        s1.setText(String.valueOf(p1));
+        s2.setText(String.valueOf(p2));
+
     }
     private void init(@Nullable AttributeSet set)
     {
@@ -83,24 +112,21 @@ public class CustomView extends View {
         paint1.setColor(Color.RED);
         postInvalidate();
     }
-    public int getpl()
-    {
-        return player;
-    }
+
 
     public void play(int temp) {
 
-            x = temp / 5;
-            y = temp % 5;
+            x = temp / n;
+            y = temp % n;
             if (prevpos == -1) {
                 flag[temp] = player;
                 if(player==1)
-                path1.moveTo(100 + (200 * x), 100 + (200 * y));
+                path1.moveTo(50 + (space * x), 50 + (space * y));
                 else
-                    path2.moveTo(100 + (200 * x), 100 + (200 * y));
+                    path2.moveTo(50 + (space * x), 50 + (space * y));
                 prevpos = temp;
             } else {
-                if (temp == prevpos + 1 || temp == prevpos + 5 || temp == prevpos - 1 || temp == prevpos - 5) {
+                if (temp == prevpos + 1 || temp == prevpos + n || temp == prevpos - 1 || temp == prevpos - n) {
 
                     flag[temp] = player;
 
@@ -109,33 +135,55 @@ public class CustomView extends View {
 
                        box[pos]++;
                         if(box[pos]>=4&&points[pos]==0)
-                            points[pos]=player;
-                       if(pos>=5)
-                       {pos-=5;
+                        {points[pos]=player;
+                            update(player);}
+                       if(pos>=n)
+                       {pos-=n;
                        box[pos]++;
                            if(box[pos]>=4&&points[pos]==0)
-                               points[pos]=player;
+                           {points[pos]=player;
+                                update(player);}
                        }
                     }
                     else
                     {
                         box[pos]++;
                         if(box[pos]>=4&&points[pos]==0)
-                            points[pos]=player;
+                        {points[pos]=player;
+                            update(player);}
                         if(pos>=1)
                         {pos-=1;
                         box[pos]++;
                             if(box[pos]>=4&&points[pos]==0)
-                                points[pos]=player;
+                            {points[pos]=player;
+                            update(player);}
+
                         }
                     }
                     pos= temp<prevpos?temp:prevpos;
 
                     if(player==1)
-                        path1.lineTo(100 + (200 * x), 100 + (200 * y));
+                        path1.lineTo(50 + (space * x), 50 + (space * y));
                     else
-                        path2.lineTo(100 + (200 * x), 100 + (200 * y));
+                        path2.lineTo(50 + (space * x), 50 + (space * y));
+
                     player = player == 1 ? 2 : 1;
+                    if(player==1)
+                    text.setText("Player 1 turn :)");
+                    else
+                        text.setText("Player 2 turn :)");
+
+                    if(p1+p2==(b*b))
+
+                   {
+                        if(p1>p2)
+                            text.setText("Game Over.Player1 won");
+                        else if(p1<p2)
+                            text.setText("Game Over.Player2 won");
+                        else
+                            text.setText("Game Over.It's a draw");
+
+                    }
 
                     prevpos = -1;
 
@@ -144,9 +192,9 @@ public class CustomView extends View {
                     flag[prevpos] = 0;
                     flag[temp] = player;
                     if(player==1)
-                        path1.moveTo(100 + (200 * x), 100 + (200 * y));
+                        path1.moveTo(50 + (space * x), 50 + (space * y));
                     else
-                        path2.moveTo(100 + (200 * x), 100 + (200 * y));
+                        path2.moveTo(50 + (space * x), 50 + (space * y));
                     prevpos = temp;
                 }
             }
@@ -160,28 +208,30 @@ public class CustomView extends View {
         canvas.drawColor(Color.parseColor("#1Affffff"));
 
 
-        for(i=0;i<5;i++)
-            for(j=0;j<5;j++)
-            {   temp=(i*5)+j;
+        for(i=0;i<n;i++)
+            for(j=0;j<n;j++)
+            {   temp=(i*n)+j;
                 if(flag[temp]==1)
-                canvas.drawCircle(100+(200*i),100+(200*j),10,  color1);
+                canvas.drawCircle(50+(space*i),50+(space*j),10,  color1);
                 else if(flag[temp]==2)
-                    canvas.drawCircle(100+(200*i),100+(200*j),10,  color2);
+                    canvas.drawCircle(50+(space*i),50+(space*j),10,  color2);
             else
-                canvas.drawCircle(100+(200*i),100+(200*j),10,  paint);
+                canvas.drawCircle(50+(space*i),50+(space*j),10,  paint);
             }
          canvas.drawPath(path1,paint1);
         canvas.drawPath(path2,paint2);
-        for(i=0;i<4;i++)
-            for(j=0;j<4;j++)
-            {   temp=i*5+j;
-                rect.top=100+(200*(j));
-                rect.left=(i)*200+100;
-                rect.right=(i)*200+300;
-                rect.bottom=300+(200*(j));
+        for(i=0;i<b;i++)
+            for(j=0;j<b;j++)
+            {   temp=i*n+j;
+                rect.top=50+(space*(j));
+                rect.left=(i)*space+50;
+                rect.right=((i+1)*space)+50;
+                rect.bottom=50+(space*(j+1));
                 if(box[temp]>=4) {
+
                     if (points[temp] == 1)
                         canvas.drawRect(rect, color3);
+
                     else canvas.drawRect(rect, color4);
                 }
             }
@@ -200,11 +250,11 @@ public class CustomView extends View {
         switch(event.getAction())
         {
             case MotionEvent.ACTION_DOWN:
-                for(i=0;i<5;i++)
-                    for(j=0;j<5;j++)
+                for(i=0;i<n;i++)
+                    for(j=0;j<n;j++)
                     {
-                        if(x<=150+(200*i)&&x>=50+(200*i)&&y<=150+(200*j)&&y>=50+(200*j)) {
-                            temp = (i * 5) + j;
+                        if(x<=100+(space*i)&&x>=(space*i)&&y<=100+(space*j)&&y>=(space*j)) {
+                            temp = (i * n) + j;
                             play(temp);
                             break;
                         }
